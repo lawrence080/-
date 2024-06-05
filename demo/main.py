@@ -7,9 +7,12 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
+import map_reduce_prompt_v2
 
 load_dotenv()
 os.getenv("OPENAI_API_KEY")
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.getenv("LANGCHAIN_API_KEY")
 
 
 
@@ -42,18 +45,24 @@ def get_vector_store(text_chunks):
 def get_conversational_chain():
 
     prompt_template = """
-    根據提供的上下文盡可能詳細地回答問題，確保提供所有細節。如果答案不在提供的上下文中，請直接說「答案在上下文中不存在」，不要提供錯誤的答案。\n\n
+    根據提供的上下文盡可能詳細地回答問題，確保提供所有細節。如果答案不在提供的上下文中，不要捏造答案，請回答不知道。\n\n
     Context:\n {context}?\n
     Question: \n{question}\n
 
     Answer:
     """
+    # combinePrompt = """
+    #     根據提供的上下文盡可能詳細地回答問題，確保提供所有細節。如果在上下文中有出現先相關的資訊請如實回答，不要說不知道。如果答案不在提供的上下文中，不要捏造答案，請回答不知道。
+    #     summeries:\n {summaries}\n
+    #     Answer:
+    # """
 
     model = ChatOpenAI(model="gpt-3.5-turbo-0125",
                              temperature=0.3)
 
     prompt = PromptTemplate(template = prompt_template, input_variables = ["context", "question"])
-    chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+    combinePrompt = map_reduce_prompt_v2.COMBINE_PROMPT_SELECTOR.get_prompt(model)
+    chain = load_qa_chain(model, chain_type="map_reduce",question_prompt= prompt, combine_prompt=combinePrompt)
 
     return chain
 
@@ -63,7 +72,7 @@ def user_input(user_question):
     embeddings = OpenAIEmbeddings()
     
     new_db = FAISS.load_local("faiss_index", embeddings,allow_dangerous_deserialization=True)
-    docs = new_db.similarity_search(user_question)
+    docs = new_db.similarity_search(user_question,k=8)
 
     chain = get_conversational_chain()
 
