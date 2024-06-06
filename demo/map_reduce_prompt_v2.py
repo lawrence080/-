@@ -3,9 +3,10 @@ from langchain_core.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
+    MessagesPlaceholder
 )
 from langchain_core.prompts.prompt import PromptTemplate
-
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 question_prompt_template = """Use the following portion of a long document to see if any of the text is relevant to answer the question. 
 Return any relevant text verbatim.
 {context}
