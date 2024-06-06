@@ -163,4 +163,5 @@ cython_debug/
 
 # faiss_index
 faiss_index/
+PDFfolder/
 
