@@ -8,6 +8,13 @@ from Graph_state import GraphState
 
 workflow = StateGraph(GraphState)
 
+# def getFileInstance(instance):
+#     if instance!=None:
+#         return instance
+
+# fileReaderInstance = getFileInstance()
+
+
 # Define the nodes
 workflow.add_node("web_search", Graph_flow.web_search)  # web search
 workflow.add_node("retrieve", Graph_flow.retrieve)  # retrieve
@@ -46,6 +53,8 @@ workflow.add_conditional_edges(
         "not useful": "transform_query",
     },
 )
+
+
 
 # Compile
 app = workflow.compile()

@@ -2,7 +2,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
-import os
+from dotenv import load_dotenv
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,9 +14,14 @@ from typing import (
     Tuple,
     Type,
 )
+import os
 
 ### from langchain_cohere import CohereEmbeddings
 
+load_dotenv()
+os.getenv("OPENAI_API_KEY")
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.getenv("LANGCHAIN_API_KEY")
 
 class indexing():
     # Set embeddings

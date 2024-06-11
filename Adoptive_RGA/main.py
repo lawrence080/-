@@ -23,7 +23,7 @@ os.getenv("LANGCHAIN_API_KEY")
 
 
 
-def user_input(user_question):
+def user_input(user_question,fileReaderInstance):
     inputs = {
         "question": f"{user_question}"
     }
@@ -42,11 +42,11 @@ def main():
     memory ={}
     st.set_page_config("Chat PDF")
     st.header("Chat with PDF using OpenAI💁")
-    fileReader.FileReader()
+    fileReadInstance = fileReader.FileReader()
     user_question = st.text_input("Ask a Question from the PDF Files")
 
     if user_question:
-        response = user_input(user_question)
+        response = user_input(user_question,fileReadInstance)
         st.write("Reply: ", response["generation"])
 
 

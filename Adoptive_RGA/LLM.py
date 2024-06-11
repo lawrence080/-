@@ -1,9 +1,11 @@
 from typing import Literal
 
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 import Index
+
+
 
 
 # Data model
@@ -22,7 +24,7 @@ class RouteQuery(BaseModel):
 
         # Prompt
         system = """You are an expert at routing a user question to a vectorstore or web search.
-        The vectorstore contains documents related to agents, prompt engineering, and adversarial attacks.
+        The vectorstore contains documents related to 電信號碼申請，電信號碼使用收費標準，無線電頻率及特殊電訊號使用收費標準以及網際網路管理業務.
         Use the vectorstore for questions on these topics. Otherwise, use web-search."""
         route_prompt = ChatPromptTemplate.from_messages(
             [
@@ -49,10 +51,11 @@ class GradeDocuments(BaseModel):
         structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
         # Prompt
-        system = """You are a grader assessing relevance of a retrieved document to a user question. \n 
-            If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant. \n
-            It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
-            Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."""
+        system = """你是一位評分員，負責評估檢索到的文件與使用者問題的相關性。\n
+                如果文件包含與使用者問題相關的關鍵字或語義，則將其評定為相關。\n
+                這不需要嚴格的測試。目標是篩選出錯誤的檢索結果。\n
+                給出一個「yes」或「no」的二元分數，以指示文件是否與問題相關。
+                """
         grade_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", system),
@@ -68,8 +71,19 @@ from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 def generat():
 # Prompt
-    prompt = hub.pull("rlm/rag-prompt")
+    # prompt = hub.pull("rlm/rag-prompt")
+    promptTemplate = """
 
+        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。如果你不知道答案，就直接說你不知道。答案最多使用三句話並保持簡潔。
+
+        Question:{question}
+
+        Context:{context}
+
+        Answer: 
+
+    """
+    prompt = PromptTemplate(template=promptTemplate, input_variables=["question","context"])
     # LLM
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
     # Chain
@@ -94,8 +108,8 @@ class GradeHallucinations(BaseModel):
         structured_llm_grader = llm.with_structured_output(GradeHallucinations)
 
         # Prompt
-        system = """You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. \n 
-            Give a binary score 'yes' or 'no'. 'Yes' means that the answer is grounded in / supported by the set of facts."""
+        system = """你是一位評分員，負責評估大型語言模型（LLM）生成的答案是否基於／支持於一組檢索到的事實。\n 
+    給予「yes」或「no」的二元分數。「yes」表示答案是基於／支持於這組事實。"""
         hallucination_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", system),
@@ -119,8 +133,8 @@ class GradeAnswer(BaseModel):
         structured_llm_grader = llm.with_structured_output(GradeAnswer)
 
         # Prompt
-        system = """You are a grader assessing whether an answer addresses / resolves a question \n 
-            Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question."""
+        system = """你是一位評分員，負責評估一個答案是否解決了問題。\n
+                給予「yes」或「no」的二元分數。「yes」表示答案解決了問題。"""
         answer_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", system),
@@ -136,8 +150,8 @@ def question_reWriter():
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
     # Prompt
-    system = """You a question re-writer that converts an input question to a better version that is optimized \n 
-        for vectorstore retrieval. Look at the input and try to reason about the underlying semantic intent / meaning."""
+    system = """你是一位問題重寫員，負責將輸入的問題轉換為針對向量庫檢索優化的更佳版本。\n
+    查看輸入問題並嘗試推理其背後的語義意圖／含義。"""
     re_write_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),

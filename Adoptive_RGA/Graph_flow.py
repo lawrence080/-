@@ -14,6 +14,9 @@ from fileReader import FileReader
 
 web_search_tool = TavilySearchResults(k=3)
 
+
+
+
 def retrieve(state):
     """
     Retrieve documents
@@ -28,6 +31,7 @@ def retrieve(state):
     question = state["question"]
 
     # Retrieval
+    # fileReader = instance
     fileReader = FileReader()
     vector_store = fileReader.get_store()
     documents = vector_store.invoke(question)

@@ -3,7 +3,10 @@ import Build_graph
 import os
 # Run
 
+from dotenv import load_dotenv
 
+load_dotenv()
+os.getenv("TAVILY_API_KEY")
 
 userinput = input("請輸入問題")
 inputs = {
