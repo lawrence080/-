@@ -5,11 +5,11 @@ import os
 from dotenv import load_dotenv
 
 import fileReader
-
+import PdfMinerFileReader
 
 
 from pprint import pprint
-import Build_graph
+from Build_graph import BuildGraph
 load_dotenv()
 os.getenv("OPENAI_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
@@ -23,11 +23,13 @@ os.getenv("LANGCHAIN_API_KEY")
 
 
 
-def user_input(user_question,fileReaderInstance):
+def user_input(user_question):
+    ret = PdfMinerFileReader.FileReader()
     inputs = {
         "question": f"{user_question}"
     }
-    for output in Build_graph.app.stream(inputs):
+    buildGraph = BuildGraph(ret)
+    for output in buildGraph.build(inputs):
         for key, value in output.items():
             # Node
             pprint(f"Node '{key}':")
@@ -39,14 +41,14 @@ def user_input(user_question,fileReaderInstance):
 
 
 def main():
+    # fileReadInstance = PdfMinerFileReader.FileReader()
     memory ={}
     st.set_page_config("Chat PDF")
     st.header("Chat with PDF using OpenAI💁")
-    fileReadInstance = fileReader.FileReader()
     user_question = st.text_input("Ask a Question from the PDF Files")
 
     if user_question:
-        response = user_input(user_question,fileReadInstance)
+        response = user_input(user_question)
         st.write("Reply: ", response["generation"])
 
 

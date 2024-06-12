@@ -74,7 +74,7 @@ def generat():
     # prompt = hub.pull("rlm/rag-prompt")
     promptTemplate = """
 
-        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。如果你不知道答案，就直接說你不知道。答案最多使用三句話並保持簡潔。
+        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。如果你不知道答案，就直接說你不知道。
 
         Question:{question}
 
