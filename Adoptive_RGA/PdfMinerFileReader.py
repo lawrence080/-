@@ -15,24 +15,33 @@ class FileReader():
     SpecfolderName:str = "C:\\Users\\lawrencechen\\Desktop\\法律諮詢小幫手\\law-and-regulation-helper\\demo\\PDFfolder\\specData"
     RegfolderName:str = "C:\\Users\\lawrencechen\\Desktop\\法律諮詢小幫手\\law-and-regulation-helper\\demo\\PDFfolder\\regData"
     DBpath: str = "faiss_index"
-    SpecVectorStore:None
-    RegVectorStore:None
+    SpecVectorStore:None = None
+    RegVectorStore:None = None
+    initialized:bool = False
 
     def __init__(self) -> None:
+        if self.initialized:
+            pass
+        else:
+            self.setDB()
+
+    def setDB(self):
         specPath = self.specfolderReader()
         regPath = self.regfolderReader()
-        specRetriever = self.loadPDFDoc(specPath)
-        regRetriever = self.loadPDFDoc(regPath)
+        specRetriever = self.loadPDFDoc(specPath,"SPEC")
+        regRetriever = self.loadPDFDoc(regPath,"REG")
         self.SpecVectorStore = specRetriever
         self.RegVectorStore = regRetriever
 
     def getSpecStore(self):
-        return self.SpecVectorStore
+        emb = OpenAIEmbeddings()
+        return FAISS.load_local(self.DBpath,embeddings=emb,index_name="SPEC",allow_dangerous_deserialization=True).as_retriever()
 
     def getRegStore(self):
-        return self.RegVectorStore
+        emb = OpenAIEmbeddings()
+        return FAISS.load_local(self.DBpath,embeddings=emb,index_name="REG",allow_dangerous_deserialization=True).as_retriever()
 
-    def loadPDFDoc(self, docs):
+    def loadPDFDoc(self, docs, index):
         for pdfFilePath in docs:
             
             loader = PDFMinerLoader(pdfFilePath)
@@ -40,7 +49,7 @@ class FileReader():
             chunk = loader.load_and_split(text_splitter=text_splitter)
             embeddings = OpenAIEmbeddings()
             vector_store = FAISS.from_documents(chunk,embedding=embeddings)
-            vector_store.save_local(self.DBpath)
+            vector_store.save_local(self.DBpath, index_name=index)
         return vector_store.as_retriever()
 
     def specfolderReader(self):

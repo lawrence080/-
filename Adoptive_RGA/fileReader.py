@@ -33,6 +33,9 @@ class FileReader():
         # doc_chunk = self.get_dirtectory_loader()
         text_chunks = self.get_text_chunks(raw_text)
         self.vector_store = self.get_vector_store(docs_chunks=text_chunks)
+
+
+        
             
     def get_store(self):
         return self.vector_store

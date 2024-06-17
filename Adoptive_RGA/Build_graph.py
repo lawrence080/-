@@ -4,7 +4,7 @@ from Graph_state import GraphState
 from langgraph.checkpoint.memory import MemorySaver
 import asyncio
 # from Index import indexing
-
+from PdfMinerFileReader import FileReader
 
 
 
@@ -15,10 +15,14 @@ class BuildGraph():
     #     if instance!=None:
     #         return instance
 
-    # fileReaderInstance = getFileInstance()
     GF: None
-    def __init__(self, ret) -> None:
-        self.GF = GraphFlow(ret)
+    vectorStore: None
+
+    def __init__(self) -> None:
+        if not FileReader.initialized:
+            self.vectorStore = FileReader()
+            FileReader.initialized = True
+        self.GF = GraphFlow()
 
     def __del__(self):
         print('Destructor called, Employee deleted.')

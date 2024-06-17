@@ -19,8 +19,8 @@ web_search_tool = TavilySearchResults(k=3)
 class GraphFlow():
     retriever:None
 
-    def __init__(self,ret) -> None:
-        self.retriever =ret
+    def __init__(self) -> None:
+        pass
 
     def retrieve(self,state,type):
         """
@@ -37,11 +37,11 @@ class GraphFlow():
 
         # Retrieval
         # fileReader = instance
-        # fileReader = FileReader()
+        fileReader = FileReader()
         if type == "spec":
-            vector_store = self.retriever.getSpecStore()
+            vector_store = fileReader.getSpecStore()
         else:
-            vector_store = self.retriever.getRegStore()
+            vector_store = fileReader.getRegStore()
         documents = vector_store.invoke(question)
         return {"documents": documents, "question": question}
     
