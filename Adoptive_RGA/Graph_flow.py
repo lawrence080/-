@@ -22,7 +22,7 @@ class GraphFlow():
     def __init__(self,ret) -> None:
         self.retriever =ret
 
-    def retrieve(self,state):
+    def retrieve(self,state,type):
         """
         Retrieve documents
 
@@ -38,9 +38,22 @@ class GraphFlow():
         # Retrieval
         # fileReader = instance
         # fileReader = FileReader()
-        vector_store = self.retriever.get_store()
+        if type == "spec":
+            vector_store = self.retriever.getSpecStore()
+        else:
+            vector_store = self.retriever.getRegStore()
         documents = vector_store.invoke(question)
         return {"documents": documents, "question": question}
+    
+
+    def SPECvectorstore(self,state):
+        return self.retrieve(state,"spec")
+
+    def REGvectorstore(self,state):
+        return self.retrieve(state,"reg")
+    
+
+
 
 
     def generate(self,state):
@@ -89,6 +102,7 @@ class GraphFlow():
                 filtered_docs.append(d)
             else:
                 print("---GRADE: DOCUMENT NOT RELEVANT---")
+                # filtered_docs.append(d)
                 continue
         return {"documents": filtered_docs, "question": question}
 
@@ -141,7 +155,7 @@ class GraphFlow():
 
     def route_question(self,state):
         """
-        Route question to web search or RAG.
+        Route question to general or special.
 
         Args:
             state (dict): The current graph state
@@ -153,12 +167,13 @@ class GraphFlow():
         print("---ROUTE QUESTION---")
         question = state["question"]
         source = RouteQuery.router().invoke({"question": question})
-        if source.datasource == "web_search":
-            print("---ROUTE QUESTION TO WEB SEARCH---")
-            return "web_search"
-        elif source.datasource == "vectorstore":
-            print("---ROUTE QUESTION TO RAG---")
-            return "vectorstore"
+        print(source)
+        if source.datasource == "SPECvectorstore":
+            print("---ROUTE QUESTION TO SPECvectorstore---")
+            return "SPECvectorstore"
+        elif source.datasource == "REGvectorstore":
+            print("---ROUTE QUESTION TO REGvectorstore---")
+            return "REGvectorstore"
 
 
     def decide_to_generate(self,state):
@@ -187,7 +202,8 @@ class GraphFlow():
             # We have relevant documents, so generate answer
             print("---DECISION: GENERATE---")
             return "generate"
-
+    
+    
 
     def grade_generation_v_documents_and_question(self,state):
         """
