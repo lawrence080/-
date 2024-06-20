@@ -3,7 +3,6 @@ from typing import Literal
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
-import Index
 from langchain_core.pydantic_v1 import BaseModel
 
 
@@ -152,7 +151,7 @@ class GradeAnswer(BaseModel):
 
     def answer_grade():
         # LLM with function call
-        llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0.1)
         structured_llm_grader = llm.with_structured_output(GradeAnswer)
 
         # Prompt
@@ -170,7 +169,7 @@ class GradeAnswer(BaseModel):
 
 
 def question_reWriter():
-    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.4)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0.4)
 
     # Prompt
     system = """你是一位問題重寫員，負責將輸入的問題轉換為針對向量庫檢索優化的更佳版本。\n
