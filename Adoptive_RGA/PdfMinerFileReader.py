@@ -55,6 +55,7 @@ class FileReader():
         except:
             st.write(f"file {doc} already exist")
             print(f"file {doc} already exist")
+            os.remove(doc)
 
     def getSpecStore(self):
         emb = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -68,7 +69,7 @@ class FileReader():
 
     def loadPDFDoc(self, doc, index):   
         loader = PDFMinerLoader(doc)
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=500)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
         chunk = loader.load_and_split(text_splitter=text_splitter)
         embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
         vector_store = FAISS.from_documents(chunk,embedding=embeddings)

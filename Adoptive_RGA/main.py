@@ -71,6 +71,8 @@ def main():
                 if success ==False:
                     st.write("檔案上傳失敗")
                 st.success("完成")
+        if st.button("清除全部記憶"):
+            removeExistFile()
     if submitted:
         response = user_input(user_question)
         if response == "the aip key is invalid or you have exceed the limit":
@@ -82,7 +84,22 @@ def main():
                 st.write("source:",source)
 
 
-
+def removeExistFile():
+    try:
+        os.remove("faiss_index/REGvectorstore.faiss")
+        os.remove("faiss_index/REGvectorstore.pkl")
+    except:
+        print("faiss_index/REGvectorstore.faiss already deleted")
+    finally:
+        try:
+            os.remove("faiss_index/SPECvectorstore.faiss")
+            os.remove("faiss_index/SPECvectorstore.pkl")
+        except:
+            print("faiss_index/SPECvectorstore.faiss already deleted")
+        finally:
+            docs = FileReader().folderReader("PDFfolder/existedFile")
+            for doc in docs:
+                os.remove(doc)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ from LLM import (
 
 
 class BuildGraph():
-    recursionLimit: int = 3
+    recursionLimit: int = 2
     workflow = StateGraph(GraphState)
     memery = MemorySaver()
     # def getFileInstance(instance):
