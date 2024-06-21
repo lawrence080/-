@@ -69,7 +69,7 @@ def main():
             with st.spinner("processing ....."):
                 if pdf_doc != None:
                     for doc in pdf_doc:
-                        with open(f'PDFfolder/newData/{doc.name}', 'wb') as f:
+                        with open(f'Adoptive_RGA/PDFfolder/newData/{doc.name}', 'wb') as f:
                             # src = doc._file_urls.upload_url + "/doc.name"
                             # shutil.copyfile(src,f'demo/PDFfolder/regData/{doc.name}')
                             f.write(doc.read())

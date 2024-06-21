@@ -14,9 +14,9 @@ from langchain_community.embeddings import JinaEmbeddings
 
 class FileReader():
     key:str = "jina_350071a0ca714f38a8fe49d49546a999ETJRvVof0L1G_cuNiHWgcfQ-yvgB"
-    SpecfolderName:str = "PDFfolder/specData"
-    RegfolderName:str = "PDFfolder/regData"
-    NewFolderName:str = "PDFfolder/newData"
+    SpecfolderName:str = "Adoptive_RGA/PDFfolder/specData"
+    RegfolderName:str = "Adoptive_RGA/PDFfolder/regData"
+    NewFolderName:str = "Adoptive_RGA/PDFfolder/newData"
     DBpath: str = "faiss_index"
     SpecVectorStore:None = None
     RegVectorStore:None = None
