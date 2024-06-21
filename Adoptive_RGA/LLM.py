@@ -92,7 +92,7 @@ def generat():
     # prompt = hub.pull("rlm/rag-prompt")
     promptTemplate = """
 
-        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。提供越多信息越好，請盡量仔細的給出所有資訊。如果你不知道答案，就直接說你不知道。請用繁體中文回答。
+        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。提供越多信息越好，請盡量仔細的給出所有資訊。如果你不知道答案，就直接說你不知道。請用繁體中文回答。你的回答必須小於10000個token。
 
         Question:{question}
 
@@ -123,7 +123,7 @@ class GradeHallucinations(BaseModel):
     def hallucination_grader():
 
         # LLM with function call
-        llm = ChatOpenAI(model="gpt-4o", temperature=0.1)
+        llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
         structured_llm_grader = llm.with_structured_output(GradeHallucinations)
 
         # Prompt
@@ -151,7 +151,7 @@ class GradeAnswer(BaseModel):
 
     def answer_grade():
         # LLM with function call
-        llm = ChatOpenAI(model="gpt-4o", temperature=0.1)
+        llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
         structured_llm_grader = llm.with_structured_output(GradeAnswer)
 
         # Prompt
@@ -169,7 +169,7 @@ class GradeAnswer(BaseModel):
 
 
 def question_reWriter():
-    llm = ChatOpenAI(model="gpt-4o", temperature=0.4)
+    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.4)
 
     # Prompt
     system = """你是一位問題重寫員，負責將輸入的問題轉換為針對向量庫檢索優化的更佳版本。\n

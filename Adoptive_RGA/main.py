@@ -7,9 +7,15 @@ import json
 from  PdfMinerFileReader import FileReader
 import shutil
 
+import threading 
 
+from streamlit.runtime.scriptrunner import add_script_run_ctx
+from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
+from streamlit.runtime import get_instance
+import datetime
 from pprint import pprint
 from Build_graph import BuildGraph
+FIFO = []
 load_dotenv()
 os.getenv("OPENAI_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
@@ -102,6 +108,30 @@ def removeExistFile():
                 os.remove(doc)
 
 
+
+
+def start_beating(user_id):
+    thread = threading.Timer(interval=2, function=start_beating, args=(user_id,) )
+
+    # insert context to the current thread, needed for 
+    # getting session specific attributes like st.session_state
+
+    add_script_run_ctx(thread)
+
+     # context is required to get session_id of the calling
+     # thread (which would be the script thread) 
+    ctx = get_script_run_ctx()     
+
+    runtime = get_instance()     # this is the main runtime, contains all the sessions
+    if runtime.is_active_session(session_id=ctx.session_id):
+        # Session is running
+        thread.start()
+    else:
+        os._exit(0)
+
+
+
 if __name__ == "__main__":
-    # buildGraph = BuildGraph(ret)
+    user_id = get_script_run_ctx().session_id
     main()
+    start_beating(user_id)

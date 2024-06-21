@@ -41,9 +41,7 @@ class FileReader():
                 index = RouteDocument.router().invoke({"question":doc[start:end]})
                 print(index.datasource)
                 self.loadPDFDoc(doc,index.datasource)
-                self.moveFile(doc)                  
-            
-            
+                self.moveFile(doc)                         
         else:
             return False
 
@@ -96,7 +94,7 @@ class FileReader():
         paths = []
         path = f"{name}"
         for filename in os.listdir(path):
-            if filename.endswith('.pdf') or file.endswith('.PDF'):  # Check if the file is a PDF
+            if filename.endswith('.pdf') or filename.endswith('.PDF'):  # Check if the file is a PDF
                 pdf_path = os.path.join(path, filename)
                 paths.append(pdf_path)
                 print("no")
@@ -110,6 +108,7 @@ class FileReader():
                             pdf_path = os.path.join(f, file)
                             print(f"-----{file}-----")
                             paths.append(pdf_path)
+
 
         # print(paths)
         if paths==[]:

@@ -1,5 +1,5 @@
 from langgraph.graph import END, StateGraph
-
+import openai
 from Graph_state import GraphState
 from langgraph.checkpoint.memory import MemorySaver
 import asyncio
@@ -331,11 +331,14 @@ class GraphFlow():
         documents = state["documents"]
         generation = state["generation"]
 
-        score = GradeHallucinations.hallucination_grader().invoke(
-            {"documents": documents, "generation": generation}
-        )
-        grade = score.binary_score
-
+        try:
+            score = GradeHallucinations.hallucination_grader().invoke(
+                {"documents": documents, "generation": generation}
+            )
+            grade = score.binary_score
+        except openai.BadRequestError:
+            print("too many token")
+            grade = "yes"
         # Check hallucination
         if grade == "yes":
             print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
@@ -347,6 +350,7 @@ class GraphFlow():
             return "useful"
         else:
             if BuildGraph.recursionLimit>0:
+                BuildGraph.recursionLimit-=1
                 pprint("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
                 return "not supported"
             else:
