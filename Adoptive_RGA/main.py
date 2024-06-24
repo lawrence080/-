@@ -92,20 +92,23 @@ def main():
 
 def removeExistFile():
     try:
-        os.remove("faiss_index/REGvectorstore.faiss")
-        os.remove("faiss_index/REGvectorstore.pkl")
+        os.remove("Adoptive_RGA/faiss_index/REGvectorstore.faiss")
+        os.remove("Adoptive_RGA/faiss_index/REGvectorstore.pkl")
     except:
-        print("faiss_index/REGvectorstore.faiss already deleted")
+        print("Adoptive_RGA/faiss_index/REGvectorstore.faiss already deleted")
     finally:
         try:
-            os.remove("faiss_index/SPECvectorstore.faiss")
-            os.remove("faiss_index/SPECvectorstore.pkl")
+            os.remove("Adoptive_RGA/faiss_index/SPECvectorstore.faiss")
+            os.remove("Adoptive_RGA/faiss_index/SPECvectorstore.pkl")
         except:
-            print("faiss_index/SPECvectorstore.faiss already deleted")
+            print("Adoptive_RGA/faiss_index/SPECvectorstore.faiss already deleted")
         finally:
             docs = FileReader().folderReader("Adoptive_RGA/PDFfolder/existedFile")
-            for doc in docs:
-                os.remove(doc)
+            try:
+                for doc in docs:
+                    os.remove(doc)
+            except:
+                print("PDF file already deleted")
 
 
 

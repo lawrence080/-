@@ -1,5 +1,8 @@
 import main
 
-import subprocess
+# import subprocess
 
-subprocess.run(["streamlit","run", "Adoptive_RGA/main.py"]) 
+import os
+os.system('"streamlit run Adoptive_RGA/main.py"')
+
+# subprocess.run(["streamlit","run", "Adoptive_RGA/Run.py"]) 

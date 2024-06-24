@@ -98,7 +98,6 @@ class FileReader():
                 pdf_path = os.path.join(path, filename)
                 paths.append(pdf_path)
             else:
-                print("yes")
                 f = name+"\\"+filename
                 if Path(f).is_dir():
                     print(f"----enter directory {f}----------")
