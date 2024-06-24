@@ -103,7 +103,7 @@ def removeExistFile():
         except:
             print("faiss_index/SPECvectorstore.faiss already deleted")
         finally:
-            docs = FileReader().folderReader("PDFfolder/existedFile")
+            docs = FileReader().folderReader("Adoptive_RGA/PDFfolder/existedFile")
             for doc in docs:
                 os.remove(doc)
 
