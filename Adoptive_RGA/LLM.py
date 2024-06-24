@@ -3,7 +3,6 @@ from typing import Literal
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
-import Index
 from langchain_core.pydantic_v1 import BaseModel
 
 
@@ -49,14 +48,31 @@ class GradeDocuments(BaseModel):
     )
     def retrieval_grader():
         # LLM with function call
-        llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.1)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0.1)
         structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
         # Prompt
         system = """你是一位評分員，負責評估檢索到的文件與使用者問題的相關性。\n
                 如果文件包含與使用者問題相關的關鍵字或語義，則將其評定為相關。\n
                 這不需要嚴格的測試。目標是篩選出錯誤的檢索結果。\n
-                給出一個「yes」或「no」的二元分數，以指示文件是否與問題相關。
+                給出一個「yes」或「no」的二元分數，以指示文件是否與問題相關。\n
+
+                example:
+                    question: 跟我說500的頻段有哪些?
+                    documents:  530-536,
+                                542-548,
+                                554-560,
+                                566-572,
+                                578-584,
+                                590-596*3
+                                供無線電
+                                視使用，
+                                執照期間
+                                為 9 年，
+                                期滿應申
+                                請辦理換
+                                發。
+                    answer: yes
                 """
         grade_prompt = ChatPromptTemplate.from_messages(
             [
@@ -76,7 +92,7 @@ def generat():
     # prompt = hub.pull("rlm/rag-prompt")
     promptTemplate = """
 
-        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。提供越多信息越好，請盡量仔細的給出所有資訊。如果你不知道答案，就直接說你不知道。請用繁體中文回答。
+        你是一個回答問題的助理。使用以下檢索到的上下文來回答問題。提供越多信息越好，請盡量仔細的給出所有資訊。如果你不知道答案，就直接說你不知道。請用繁體中文回答。你的回答必須小於10000個token。
 
         Question:{question}
 
@@ -87,7 +103,7 @@ def generat():
     """
     prompt = PromptTemplate(template=promptTemplate, input_variables=["question","context"])
     # LLM
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.3)
+    llm = ChatOpenAI(model_name="gpt-4o", temperature=0.3)
     # Chain
     rag_chain = prompt | llm | StrOutputParser()
     return rag_chain
