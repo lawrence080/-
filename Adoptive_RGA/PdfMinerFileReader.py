@@ -17,7 +17,7 @@ class FileReader():
     SpecfolderName:str = "Adoptive_RGA/PDFfolder/specData"
     RegfolderName:str = "Adoptive_RGA/PDFfolder/regData"
     NewFolderName:str = "Adoptive_RGA/PDFfolder/newData"
-    DBpath: str = "faiss_index"
+    DBpath: str = "Adoptive_RGA/faiss_index"
     SpecVectorStore:None = None
     RegVectorStore:None = None
     initialized:bool = True
@@ -49,7 +49,7 @@ class FileReader():
         try:
             start = doc.find("\\")+1
             end  = len(doc)
-            os.rename(doc, f"PDFfolder/existedFile/{doc[start:end]}")
+            os.rename(doc, f"Adoptive_RGA/PDFfolder/existedFile/{doc[start:end]}")
         except:
             st.write(f"file {doc} already exist")
             print(f"file {doc} already exist")
@@ -71,7 +71,7 @@ class FileReader():
         chunk = loader.load_and_split(text_splitter=text_splitter)
         embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
         vector_store = FAISS.from_documents(chunk,embedding=embeddings)
-        if os.path.exists(f"faiss_index/{index}.pkl"):
+        if os.path.exists(f"Adoptive_RGA/faiss_index/{index}.pkl"):
             local_index=FAISS.load_local(self.DBpath,embeddings=embeddings,index_name=f"{index}",allow_dangerous_deserialization=True)
             try:
                 local_index.merge_from(vector_store)
@@ -97,7 +97,6 @@ class FileReader():
             if filename.endswith('.pdf') or filename.endswith('.PDF'):  # Check if the file is a PDF
                 pdf_path = os.path.join(path, filename)
                 paths.append(pdf_path)
-                print("no")
             else:
                 print("yes")
                 f = name+"\\"+filename
@@ -133,8 +132,8 @@ class RouteDocument(BaseModel):
 
         # Prompt
         system = """您是一位專精於將檔案名稱路由至不同類別向量存儲的專家。
-                SPECvectorstore只存儲檔案名稱為無線電頻率供應計畫的檔案，其餘檔案通通儲存至REGvectorstore。
-                將檔案名稱:無線電頻率供應計畫，使用SPECvectorstore。否則，使用REGvectorstore。"""
+                SPECvectorstore只存儲檔案名稱含有無線電頻率供的檔案，其餘檔案通通儲存至REGvectorstore。
+                將檔案名稱含有無線電頻率，使用SPECvectorstore。否則，使用REGvectorstore。"""
         route_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", system),
