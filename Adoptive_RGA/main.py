@@ -28,7 +28,10 @@ os.getenv("LANGCHAIN_API_KEY")
 
 
 def user_input(user_question):
-
+    file_exists = os.path.exists("Adoptive_RGA/faiss_index/REGvectorstore.pkl") and os.path.exists("Adoptive_RGA/faiss_index/SPECvectorstore.pkl")
+    if not file_exists:
+        st.write("沒有檔案!")
+        return False
     inputs = {
         "question": f"{user_question}"
     }
@@ -39,7 +42,6 @@ def user_input(user_question):
         value = buildGraph.compile(inputs)
     except openai.RateLimitError:
         value = "the aip key is invalid or you have exceed the limit"
-        return 
     finally:
         pprint("\n---\n")
         return value
@@ -83,6 +85,8 @@ def main():
         response = user_input(user_question)
         if response == "the aip key is invalid or you have exceed the limit":
             st.write("the aip key is invalid or you have used up all your open ai credit")
+        elif response == False:
+            pass
         else:
             st.write("Reply: ", response["generation"])
             if response["documents"]!=[]:

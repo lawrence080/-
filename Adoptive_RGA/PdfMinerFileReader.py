@@ -41,7 +41,8 @@ class FileReader():
                 index = RouteDocument.router().invoke({"question":doc[start:end]})
                 print(index.datasource)
                 self.loadPDFDoc(doc,index.datasource)
-                self.moveFile(doc)                         
+                self.moveFile(doc)
+
         else:
             return False
 

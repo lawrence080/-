@@ -139,8 +139,7 @@ class GradeHallucinations(BaseModel):
         return hallucination_grader
 
 
-class agentAnalizer():
-    pass
+
 
 class GradeAnswer(BaseModel):
     """Binary score to assess answer addresses question."""
