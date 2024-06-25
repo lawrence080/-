@@ -17,6 +17,9 @@ from LLM import (
 
 
 class BuildGraph():
+    """
+        the buildGraph class initiate the agent decision node and establish sturture the Agent decision graph
+    """
     recursionLimit: int = 2
     workflow = StateGraph(GraphState)
     memery = MemorySaver()
@@ -58,7 +61,6 @@ class BuildGraph():
                 "REGvectorstore": "REGvectorstore",
             },
         )
-        # self.workflow.add_edge("web_search", "generate")
         self.workflow.add_edge("REGvectorstore", "grade_documents")
         self.workflow.add_edge("SPECvectorstore", "grade_documents")
         self.workflow.add_conditional_edges(
@@ -90,8 +92,7 @@ class BuildGraph():
             },
         )
         self.workflow.set_finish_point("recursion_limit_exceed")
-        # Compile
-        # app = self.workflow.compile(checkpointer=self.memery).stream(input)
+
         app = self.workflow.compile(checkpointer=self.memery)
         coro = app.ainvoke(input, {"configurable": {"thread_id": "thread-1"}})
         return asyncio.run(coro)
@@ -142,13 +143,22 @@ class GraphFlow():
     
 
     def SPECvectorstore(self,state):
+        """
+            retrieve the spec vectorestore
+        """
         return self.retrieve(state,"spec")
 
     def REGvectorstore(self,state):
+        """
+            retrieve the reg vectorestore
+        """
         return self.retrieve(state,"reg")
     
 
     def BOTHvectorstore(self,state):
+        """
+        retriever both spec and reg vectorstore
+        """
         print("---USING BOTH---")
         return self.retrieve(state,"both")
     

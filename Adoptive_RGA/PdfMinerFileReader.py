@@ -8,18 +8,21 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Literal
-from langchain_community.embeddings import JinaEmbeddings
 
 
 
 class FileReader():
-    key:str = "jina_350071a0ca714f38a8fe49d49546a999ETJRvVof0L1G_cuNiHWgcfQ-yvgB"
-    SpecfolderName:str = "Adoptive_RGA/PDFfolder/specData"
-    RegfolderName:str = "Adoptive_RGA/PDFfolder/regData"
+    """
+        this class handle all the pdf file loading functionalities 
+
+        NewFolderName: the path to newFolder, which is a folder for new user input files, 
+                    after the files are loaded into the local vector database, all the pdf files in Newfolder will be moved to 
+                    existedFile Folder 
+        DBpath: the path to local vector database
+    
+    """
     NewFolderName:str = "Adoptive_RGA/PDFfolder/newData"
     DBpath: str = "Adoptive_RGA/faiss_index"
-    SpecVectorStore:None = None
-    RegVectorStore:None = None
     initialized:bool = True
 
     def __init__(self) -> None:
@@ -32,6 +35,9 @@ class FileReader():
         
 
     def addFileToVectorStore(self):
+        """
+            helper function of loadPDFDoc
+        """
         docs = self.folderReader(self.NewFolderName)
         if docs != False:
             for doc in docs:
@@ -46,6 +52,10 @@ class FileReader():
             return False
 
     def moveFile(self, doc):
+        """
+        move file from newFolder to ExistedFile
+        
+        """
         try:
             start = doc.find("\\")+1
             end  = len(doc)
@@ -56,16 +66,26 @@ class FileReader():
             os.remove(doc)
 
     def getSpecStore(self):
+        """
+            return the retriever for Spec vectore store
+        """
         emb = OpenAIEmbeddings(model="text-embedding-3-large")
         return FAISS.load_local(self.DBpath,embeddings=emb,index_name="SPECvectorstore",allow_dangerous_deserialization=True).as_retriever()
 
     def getRegStore(self):
+        """
+            return the retriever for Reg vectore store
+        """
         emb = OpenAIEmbeddings(model="text-embedding-3-large")
         return FAISS.load_local(self.DBpath,embeddings=emb,index_name="REGvectorstore",allow_dangerous_deserialization=True).as_retriever()
 
 
 
     def loadPDFDoc(self, doc, index):   
+        """
+            load file in the newFolder to local database, 
+            if the file already exist in the database, file will not be added again. 
+        """
         loader = PDFMinerLoader(doc)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
         chunk = loader.load_and_split(text_splitter=text_splitter)
@@ -84,13 +104,17 @@ class FileReader():
             vector_store.save_local(folder_path=self.DBpath,index_name=index)
             print("file added")
 
-    def specfolderReader(self):
-        return self.folderReader(self.SpecfolderName)
 
-    def regfolderReader(self):
-        return self.folderReader(self.RegfolderName)
 
     def folderReader(self,name):
+        """
+            read the pdf files from user input 
+            
+            parameter: name: the path of newFolder 
+
+            return: a list of path for each pdf file 
+            EX: ["Adoptive_RGA\PDFfolder\existedFile\中華民國無線電頻率分配表.pdf", ...]
+        """
         paths = []
         path = f"{name}"
         for filename in os.listdir(path):
@@ -107,8 +131,6 @@ class FileReader():
                             print(f"-----{file}-----")
                             paths.append(pdf_path)
 
-
-        # print(paths)
         if paths==[]:
             return False
         else:

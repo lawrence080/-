@@ -1,3 +1,10 @@
+"""
+LAW-AND-REGULATION-HELPER
+created by Lawrence Chen 
+
+
+"""
+
 import streamlit as st
 
 import os
@@ -15,7 +22,10 @@ from streamlit.runtime import get_instance
 import datetime
 from pprint import pprint
 from Build_graph import BuildGraph
-FIFO = []
+
+
+# setting the api key
+# the Langchain_api_key is for traceing LLM output (for developer only)
 load_dotenv()
 os.getenv("OPENAI_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
@@ -28,6 +38,11 @@ os.getenv("LANGCHAIN_API_KEY")
 
 
 def user_input(user_question):
+    """
+    the user input function reads the user inputs and pass the input to BuildGraph where the agent will take place
+    
+    Parameter: user_question: the question user asked
+    """
 
     inputs = {
         "question": f"{user_question}"
@@ -91,6 +106,7 @@ def main():
 
 
 def removeExistFile():
+    
     try:
         os.remove("Adoptive_RGA/faiss_index/REGvectorstore.faiss")
         os.remove("Adoptive_RGA/faiss_index/REGvectorstore.pkl")
