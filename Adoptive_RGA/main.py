@@ -9,10 +9,10 @@ import streamlit as st
 
 import os
 import openai
-from dotenv import load_dotenv
-import json
+import dotenv
+from dotenv import load_dotenv, find_dotenv
 from  PdfMinerFileReader import FileReader
-import shutil
+import pydantic.v1.error_wrappers
 
 import threading 
 
@@ -26,7 +26,7 @@ from Build_graph import BuildGraph
 
 # setting the api key
 # the Langchain_api_key is for traceing LLM output (for developer only)
-load_dotenv()
+load_dotenv(find_dotenv())
 os.getenv("OPENAI_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.getenv("LANGCHAIN_API_KEY")
@@ -50,6 +50,9 @@ def user_input(user_question):
     buildGraph = BuildGraph()
     try:
         value = buildGraph.build(inputs)
+    except pydantic.v1.error_wrappers.ValidationError:
+        value = 'Please ender your openAI api key'
+        return value
     except ValueError:
         value = buildGraph.compile(inputs)
     except openai.RateLimitError:
@@ -78,6 +81,9 @@ def main():
         user_question = st.text_input("Ask a Question from the PDF Files") 
         submitted = st.form_submit_button("Submit")
     with st.sidebar:
+        api_key=st.text_input("請輸入你的open AI API KEY")
+        os.environ["OPENAI_API_KEY"] = api_key
+        dotenv.set_key(find_dotenv(), "OPENAI_API_KEY", os.environ["OPENAI_API_KEY"])
         st.title("新增資料")
         pdf_doc = st.file_uploader("上傳新增的pdf檔", accept_multiple_files=True)
         if st.button("上傳"):
@@ -98,6 +104,8 @@ def main():
         response = user_input(user_question)
         if response == "the aip key is invalid or you have exceed the limit":
             st.write("the aip key is invalid or you have used up all your open ai credit")
+        elif response == 'Please ender your openAI api key':
+            st.write("'Please ender your openAI api key'")
         else:
             st.write("Reply: ", response["generation"])
             if response["documents"]!=[]:
