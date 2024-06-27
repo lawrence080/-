@@ -130,16 +130,39 @@ class GraphFlow():
         # fileReader = instance
         fileReader = FileReader()
         if type == "spec":
-            vector_store = fileReader.getSpecStore()
-            documents = vector_store.invoke(question)
+            try:
+                vector_store = fileReader.getSpecStore()
+                documents = vector_store.invoke(question)
+            except:
+                print("--- spec does not exist using Reg instead")
+                vector_store = fileReader.getRegStore()
+                documents = vector_store.invoke(question)
+            finally:
+                return {"documents": documents, "question": question}
         elif type == "reg":
-            vector_store = fileReader.getRegStore()
-            documents = vector_store.invoke(question)
+            try:
+                vector_store = fileReader.getRegStore()
+                documents = vector_store.invoke(question)
+            except:
+                print("--- reg does not exist using spec instead")
+                vector_store = fileReader.getSpecStore()
+                documents = vector_store.invoke(question)
+            finally:
+                return {"documents": documents, "question": question}
         else:
-            vector_store = fileReader.getRegStore()
-            vector_store2 = fileReader.getSpecStore()
+            try:
+                vector_store = fileReader.getRegStore()
+                try:
+                    vector_store2 = fileReader.getSpecStore()
+                except:
+                    print("vector store 2 does not exist")
+                    return {"documents": vector_store.invoke(question), "question": question}
+            except:
+                vector_store2 = fileReader.getSpecStore()
+                return {"documents": vector_store2.invoke(question), "question": question}
+
             documents = vector_store.invoke(question) + vector_store2.invoke(question)
-        return {"documents": documents, "question": question}
+            return {"documents": documents, "question": question}
     
 
     def SPECvectorstore(self,state):
@@ -352,10 +375,7 @@ class GraphFlow():
         # Check hallucination
         if grade == "yes":
             print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-            # Check question-answering
             print("---GRADE GENERATION vs QUESTION---")
-            # score = GradeAnswer.answer_grade().invoke({"question": question, "generation": generation})
-            # grade = score.binary_score
             print("---DECISION: GENERATION ADDRESSES QUESTION---")
             return "useful"
         else:
